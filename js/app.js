@@ -1,12 +1,8 @@
-// import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r125/three.module.js'
-
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@v0.108.0/build/three.module.js";
 import {OrbitControls} from "https://cdn.jsdelivr.net/npm/three@v0.108.0/examples/jsm/controls/OrbitControls.js";
 
 function main() {
     const canvas = document.querySelector('#b');
-
-    // Renderer
     const renderer = new THREE.WebGLRenderer({canvas, antialias: true});
     renderer.setPixelRatio(window.devicePixelRatio);
     
@@ -19,44 +15,45 @@ function main() {
     camera.position.z = 5;
     camera.position.y = 2;
     camera.position.x = 0;
+
     const scene = new THREE.Scene();
+    // change background color to gray
     scene.background = new THREE.Color(0xf0f0f0);
 
     // Orbit controls
     const controls = new OrbitControls(camera, renderer.domElement);
 
-    // directional light
+    // directional and ambient light
     {
         const color = 0xFFFFFF;
         const intensity = 0.7;
         const directionalLight = new THREE.DirectionalLight(color, intensity);
         directionalLight.position.set(-1, 2, 4);
-        const light = new THREE.AmbientLight( 0x636363 ); // soft white light
+        const light = new THREE.AmbientLight(0x636363); // soft white light
         scene.add(light);
         scene.add(directionalLight);
-        light.name = "scene light";
     }
 
-    // Primitive Geometry shape
+    // Primitive Geometry Shape
     const radius = 1;
     const widthSegments = 32;
     const heightSegments = 32;
     const ballGeometry = new THREE.SphereBufferGeometry(radius, widthSegments, heightSegments);
 
     // Material
-    // const ballMaterial = new THREE.MeshBasicMaterial({ color: 0x44aa88 });  // greenish blue
-    // const ball = new THREE.Mesh(ballGeometry, ballMaterial);
-    // scene.add(ball);
+    //const ballMaterial = new THREE.MeshBasicMaterial({ color: 0x44aa88 });  // greenish blue
+    //const ball = new THREE.Mesh(ballGeometry, ballMaterial);
+    //scene.add(ball);
 
     // Textures
     const loader = new THREE.TextureLoader();
-    const texture = loader.load('assets/schcbgfp_2K_Albedo.jpg');
+    const texture = loader.load('assets/texture.jpg');
     texture.repeat.set(1, 1);
     const ballMaterial = new THREE.MeshPhongMaterial({map: texture});
     const ball = new THREE.Mesh(ballGeometry, ballMaterial);
     scene.add(ball);
 
-    // plane
+    // Plane
     {
         const planeSize = 20;
 
@@ -77,7 +74,7 @@ function main() {
         scene.add(mesh);
     }
 
-    function resizeRendererToDisplaySize(renderer) { // should explain why this works later on
+    function resizeRendererToDisplaySize(renderer) {
         const canvas = renderer.domElement;
         const width = canvas.clientWidth;
         const height = canvas.clientHeight;
@@ -88,9 +85,9 @@ function main() {
         return needResize;
     }
 
-    // Animation loop
+    // Animation/Render loop
     function render(time) {
-
+        
         if (resizeRendererToDisplaySize(renderer)) {
             const canvas = renderer.domElement;
             camera.aspect = canvas.clientWidth / canvas.clientHeight;
@@ -100,16 +97,8 @@ function main() {
         time *= 0.001;  // convert time to seconds
 
         ball.position.y = Math.sin(4*time)+2;
-        
-        // freq = 1.0; //oscillations per second 
-        // amplitude =  90; 
-        // decay =  .5;
-        // posCos = Math.abs(Math.cos(freq*time*2*Math.PI));
-        // y = amplitude*posCos/Math.exp(decay*time);
-        // position - [0,y]
 
         controls.update();
-        //controls.addEventListener('change', light_update(scene.getObjectByName("scene light")));
         renderer.render(scene, camera);
 
         requestAnimationFrame(render);
